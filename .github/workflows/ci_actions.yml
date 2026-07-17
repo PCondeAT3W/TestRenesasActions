@@ -13,12 +13,16 @@ jobs:
 
     steps:
     - name: Checkout source
-      uses: actions/checkout@v4
+      uses: actions/checkout@v7
 
-    - name: Install dependencies (CMake, MinGW, Ruby, Ceedling, Clang-Tidy)
+    - name: Install dependencies (CMake, Ruby, Ceedling, Clang-Tidy)
+      shell: bash
       run: |
         sudo apt-get update
         sudo apt-get install -y cmake build-essential ruby ruby-dev gdb clang-tidy curl
+
+    - name: Install Ceedling
+      run: sudo gem install ceedling --no-document
 
     - name: Download FSP studio 6.1.0
       run: |
@@ -36,7 +40,6 @@ jobs:
 
         sudo /root/renesas/ra/e2studio_v2025-07_fsp_v6.1.0/toolchains/gcc_arm/arm-gnu-toolchain-13.2.Rel1-x86_64-arm-none-eabi/bin/arm-none-eabi-gcc --version
         sudo /root/renesas/ra/e2studio_v2025-07_fsp_v6.1.0/toolchains/gcc_arm/arm-gnu-toolchain-13.2.Rel1-x86_64-arm-none-eabi/bin/arm-none-eabi-g++ --version
-        sudo /root/renesas/ra/e2studio_v2025-07_fsp_v6.1.0/toolchains/gcc_arm/arm-gnu-toolchain-13.2.Rel1-x86_64-arm-none-eabi/bin/arm-none-eabi-gdb --version
         sudo /root/renesas/ra/e2studio_v2025-07_fsp_v6.1.0/toolchains/gcc_arm/arm-gnu-toolchain-13.2.Rel1-x86_64-arm-none-eabi/bin/arm-none-eabi-size --version
 
     - name: Verify development environment
