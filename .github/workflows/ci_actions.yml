@@ -29,39 +29,6 @@ jobs:
       run: |
        sudo ./setup_fsp_v6_1_0_e2s_v2025-07.xz.run --accept --nox11  -- --launcher.suppressErrors -nosplash -install.silent -install.Declipse.p2.default.renesas.installPath=/opt/renesas
 
-    - name: Locate Renesas ARM GCC
-      id: renesas-toolchain
-      shell: bash
-      run: |
-        set -euxo pipefail
-
-        GCC_PATH="$(
-          sudo find /opt/renesas /root/renesas \
-            -type f \
-            -name arm-none-eabi-gcc \
-            -perm -111 \
-            2>/dev/null |
-          head -n 1
-        )"
-
-        if [ -z "${GCC_PATH}" ]; then
-          echo "arm-none-eabi-gcc was not found."
-          echo "Renesas installation directories:"
-          sudo find /opt/renesas /root/renesas \
-            -maxdepth 5 \
-            -type d \
-            2>/dev/null || true
-          exit 1
-        fi
-
-        TOOLCHAIN_BIN="$(dirname "${GCC_PATH}")"
-
-        echo "GCC_PATH=${GCC_PATH}" >> "$GITHUB_OUTPUT"
-        echo "TOOLCHAIN_BIN=${TOOLCHAIN_BIN}" >> "$GITHUB_OUTPUT"
-        echo "${TOOLCHAIN_BIN}" >> "$GITHUB_PATH"
-
-        echo "Renesas GCC found at: ${GCC_PATH}"
-
     - name: Verify Renesas toolchain
       shell: bash
       run: |
