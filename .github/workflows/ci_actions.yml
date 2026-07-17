@@ -34,10 +34,10 @@ jobs:
       run: |
         set -euxo pipefail
 
-        /root/renesas/ra/e2studio_v2025-07_fsp_v6.1.0/toolchains/gcc_arm/arm-gnu-toolchain-13.2.Rel1-x86_64-arm-none-eabi/bin/arm-none-eabi-gcc --version
-        /root/renesas/ra/e2studio_v2025-07_fsp_v6.1.0/toolchains/gcc_arm/arm-gnu-toolchain-13.2.Rel1-x86_64-arm-none-eabi/bin/arm-none-eabi-g++ --version
-        /root/renesas/ra/e2studio_v2025-07_fsp_v6.1.0/toolchains/gcc_arm/arm-gnu-toolchain-13.2.Rel1-x86_64-arm-none-eabi/bin/arm-none-eabi-gdb --version
-        /root/renesas/ra/e2studio_v2025-07_fsp_v6.1.0/toolchains/gcc_arm/arm-gnu-toolchain-13.2.Rel1-x86_64-arm-none-eabi/bin/arm-none-eabi-size --version
+        sudo /root/renesas/ra/e2studio_v2025-07_fsp_v6.1.0/toolchains/gcc_arm/arm-gnu-toolchain-13.2.Rel1-x86_64-arm-none-eabi/bin/arm-none-eabi-gcc --version
+        sudo /root/renesas/ra/e2studio_v2025-07_fsp_v6.1.0/toolchains/gcc_arm/arm-gnu-toolchain-13.2.Rel1-x86_64-arm-none-eabi/bin/arm-none-eabi-g++ --version
+        sudo /root/renesas/ra/e2studio_v2025-07_fsp_v6.1.0/toolchains/gcc_arm/arm-gnu-toolchain-13.2.Rel1-x86_64-arm-none-eabi/bin/arm-none-eabi-gdb --version
+        sudo /root/renesas/ra/e2studio_v2025-07_fsp_v6.1.0/toolchains/gcc_arm/arm-gnu-toolchain-13.2.Rel1-x86_64-arm-none-eabi/bin/arm-none-eabi-size --version
 
     - name: Verify development environment
       shell: bash
