@@ -98,11 +98,11 @@ jobs:
         ceedling version
 
     - name: Create build directory
-      run: sudo mkdir -p build
+      run: mkdir -p build
 
     - name: Configure
       run: |
-        sudo cmake -S . -B build -G Ninja \
+        cmake -S . -B build -G Ninja \
               -DARM_GNU_TOOLCHAIN_BIN="${ARM_GNU_TOOLCHAIN_BIN}" \
               -DRASC_EXE_PATH="${RASC_EXE_PATH}" \
               -DCMAKE_BUILD_TYPE=Debug -DPLATFORM=RA6T2
@@ -129,7 +129,7 @@ jobs:
     - name: Compiler warnings
       run: |
         echo "::group::Warnings"
-        sudo cmake --build build --parallel 2>&1 | tee build.log | grep warning || true
+        cmake --build build --parallel 2>&1 | tee build.log | grep warning || true
         echo "::endgroup::"
 
     - name: Unit tests with Ceedling
