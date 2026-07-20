@@ -32,14 +32,23 @@ jobs:
     - name: Install Ceedling
       run: sudo gem install ceedling --no-document
 
-    - name: Download FSP studio 6.1.0
+    - name: Download FSP 6.1.0 installer
+      shell: bash
       run: |
+        set -euxo pipefail
 
-        curl --fail --location --show-error --silent --retry 3 --output "${FSP_INSTALLER}" \ 
-        "https://github.com/renesas/fsp/releases/download/v${FSP_VERSION}/${FSP_INSTALLER}"
-        chmod +x "${FSP_INSTALLER}" 
+        curl \
+          --fail \
+          --location \
+          --show-error \
+          --silent \
+          --retry 3 \
+          --output "${FSP_INSTALLER}" \
+          "https://github.com/renesas/fsp/releases/download/v${FSP_VERSION}/${FSP_INSTALLER}"
+
+        chmod +x "${FSP_INSTALLER}"
         ls -lh "${FSP_INSTALLER}"
-    
+   
     - name: Install FSP studio 6.1.0
       run: |
        sudo mkdir -p "${RENESAS_INSTALL_DIR}"
