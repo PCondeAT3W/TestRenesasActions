@@ -14,11 +14,11 @@ jobs:
     env: 
       FSP_VERSION: "6.1.0" 
       E2STUDIO_VERSION: "2025-07" 
-      RENESAS_INSTALL_DIR: "/root/renesas" 
+      RENESAS_INSTALL_DIR: "/home/runner/renesas" 
       FSP_INSTALLER: "setup_fsp_v6_1_0_e2s_v2025-07.xz.run"
       RASC_INSTALLER: "setup_fsp_v6_1_0_rasc_v2025-07.xz.run"
-      ARM_GNU_TOOLCHAIN_BIN: "/root/renesas/ra/e2studio_v2025-07_fsp_v6.1.0/toolchains/gcc_arm/arm-gnu-toolchain-13.2.Rel1-x86_64-arm-none-eabi/bin"
-      RASC_EXE_PATH: "/root/renesas/ra/sc_v2025-07_fsp_v6.1.0/eclipse/rasc"
+      ARM_GNU_TOOLCHAIN_BIN: "/home/runner/renesas/ra/e2studio_v2025-07_fsp_v6.1.0/toolchains/gcc_arm/arm-gnu-toolchain-13.2.Rel1-x86_64-arm-none-eabi/bin"
+      RASC_EXE_PATH: "/home/runner/renesas/ra/sc_v2025-07_fsp_v6.1.0/eclipse/rasc"
 
     steps:
     - name: Checkout source
@@ -69,11 +69,11 @@ jobs:
    
     - name: Install RASC 6.1.0
       run: |
-        sudo "./${RASC_INSTALLER}" --accept --nox11 -- --launcher.suppressErrors -nosplash -install.silent
+        "./${RASC_INSTALLER}" --accept --nox11 -- --launcher.suppressErrors -nosplash -install.silent
     
     - name: Install FSP studio 6.1.0
       run: |
-       sudo "./${FSP_INSTALLER}" --accept --nox11 -- --launcher.suppressErrors -nosplash -install.silent
+       "./${FSP_INSTALLER}" --accept --nox11 -- --launcher.suppressErrors -nosplash -install.silent
      
     - name: Verify Renesas toolchain 
       shell: bash 
