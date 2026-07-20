@@ -17,7 +17,7 @@ jobs:
       RENESAS_INSTALL_DIR: "/root/renesas" 
       FSP_INSTALLER: "setup_fsp_v6_1_0_e2s_v2025-07.xz.run"
       ARM_GNU_TOOLCHAIN_BIN: "/root/renesas/ra/e2studio_v2025-07_fsp_v6.1.0/toolchains/gcc_arm/arm-gnu-toolchain-13.2.Rel1-x86_64-arm-none-eabi/bin"
-
+      RASC_EXE_PATH: "/root/renesas/ra/sc_v2025-07_fsp_v6.1.0/eclipse/rasc"
 
     steps:
     - name: Checkout source
