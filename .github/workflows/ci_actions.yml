@@ -84,12 +84,6 @@ jobs:
               -DARM_GNU_TOOLCHAIN_BIN="${ARM_GNU_TOOLCHAIN_BIN}" \
               -DCMAKE_BUILD_TYPE=Debug -DPLATFORM=RA6T2
 
-    - name: Link and verify compile commands
-      run: |
-        ln -sf build/compile_commands.json .
-        ls -l compile_commands.json
-        head -n 20 compile_commands.json
-
     - name: Static analysis with clang-tidy
       run: |
         echo "::group::Running clang-tidy"
