@@ -16,6 +16,7 @@ jobs:
       E2STUDIO_VERSION: "2025-07" 
       RENESAS_INSTALL_DIR: "/root/renesas" 
       FSP_INSTALLER: "setup_fsp_v6_1_0_e2s_v2025-07.xz.run"
+      RASC_INSTALLER: "setup_fsp_v6_1_0_rasc_v2025-07.xz.run"
       ARM_GNU_TOOLCHAIN_BIN: "/root/renesas/ra/e2studio_v2025-07_fsp_v6.1.0/toolchains/gcc_arm/arm-gnu-toolchain-13.2.Rel1-x86_64-arm-none-eabi/bin"
       RASC_EXE_PATH: "/root/renesas/ra/sc_v2025-07_fsp_v6.1.0/eclipse/rasc"
 
@@ -31,6 +32,19 @@ jobs:
 
     - name: Install Ceedling
       run: sudo gem install ceedling --no-document
+
+
+    - name: Download RASC 6.1.0 installer
+      shell: bash
+      run: |
+        curl \
+          --fail \
+          --location \
+          --show-error \
+          --silent \
+          --retry 3 \
+          --output "${FSP_INSTALLER}" \
+         "https://github.com/renesas/fsp/releases/download/v6.1.0/setup_fsp_v6_1_0_rasc_v2025-07.xz.run"
 
     - name: Download FSP 6.1.0 installer
       shell: bash
@@ -49,9 +63,13 @@ jobs:
         chmod +x "${FSP_INSTALLER}"
         ls -lh "${FSP_INSTALLER}"
    
+    - name: Install RASC 6.1.0
+      run: |
+        sudo "./setup_fsp_v6_1_0_rasc_v2025-07.xz.run" --accept --nox11 -- --launcher.suppressErrors -nosplash -install.silent
+    
     - name: Install FSP studio 6.1.0
       run: |
-        sudo "./${FSP_INSTALLER}" --accept --nox11 -- --launcher.suppressErrors -nosplash -install.silent -install.Declipse.p2.default.renesas.installPath="${RENESAS_INSTALL_DIR}"
+       sudo "./${FSP_INSTALLER}" --accept --nox11 -- --launcher.suppressErrors -nosplash -install.silent
      
     - name: Verify Renesas toolchain 
       shell: bash 
