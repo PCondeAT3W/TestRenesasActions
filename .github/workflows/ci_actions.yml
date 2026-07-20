@@ -33,7 +33,6 @@ jobs:
     - name: Install Ceedling
       run: sudo gem install ceedling --no-document
 
-
     - name: Download RASC 6.1.0 installer
       shell: bash
       run: |
@@ -45,6 +44,9 @@ jobs:
           --retry 3 \
           --output "${FSP_INSTALLER}" \
          "https://github.com/renesas/fsp/releases/download/v6.1.0/setup_fsp_v6_1_0_rasc_v2025-07.xz.run"
+
+        chmod +x "${RASC_INSTALLER}"
+        ls -lh "${RASC_INSTALLER}"
 
     - name: Download FSP 6.1.0 installer
       shell: bash
@@ -65,7 +67,7 @@ jobs:
    
     - name: Install RASC 6.1.0
       run: |
-        sudo "./setup_fsp_v6_1_0_rasc_v2025-07.xz.run" --accept --nox11 -- --launcher.suppressErrors -nosplash -install.silent
+        sudo "./${RASC_INSTALLER}" --accept --nox11 -- --launcher.suppressErrors -nosplash -install.silent
     
     - name: Install FSP studio 6.1.0
       run: |
