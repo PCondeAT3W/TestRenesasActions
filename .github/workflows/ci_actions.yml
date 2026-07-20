@@ -91,7 +91,7 @@ jobs:
         echo "::endgroup::"
 
     - name: Build
-      run: cmake --build build/RA6T2-Debug
+      run: cmake --build build
 
     - name: Compiler warnings
       run: |
