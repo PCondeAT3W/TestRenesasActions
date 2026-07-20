@@ -82,6 +82,7 @@ jobs:
       run: |
         sudo cmake -S . -B build -G Ninja \
               -DARM_GNU_TOOLCHAIN_BIN="${ARM_GNU_TOOLCHAIN_BIN}" \
+              -DRASC_EXE_PATH="${RASC_EXE_PATH}" \
               -DCMAKE_BUILD_TYPE=Debug -DPLATFORM=RA6T2
 
     - name: Static analysis with clang-tidy
