@@ -47,7 +47,8 @@ jobs:
        "-install.Declipse.p2.default.renesas.installPath=${RENESAS_INSTALL_DIR}"
      
     - name: Verify Renesas toolchain 
-      shell: bash run: | 
+      shell: bash 
+      run: | 
         set -euxo pipefail 
         sudo test -x "${ARM_GNU_TOOLCHAIN_BIN}/arm-none-eabi-gcc" 
         sudo test -x "${ARM_GNU_TOOLCHAIN_BIN}/arm-none-eabi-g++" 
