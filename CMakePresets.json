@@ -1,0 +1,31 @@
+{
+    "version": 3,
+    "configurePresets": [
+        {
+            "name": "default",
+            "hidden": true,
+            "generator": "Ninja",
+            "binaryDir": "${sourceDir}/build/${presetName}",
+            "cacheVariables": {
+                "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
+                "CMAKE_VERBOSE_MAKEFILE": "OFF"
+            }
+        },
+        {
+        "name": "RA6T2-Debug",
+        "inherits": "default",
+        "cacheVariables": {
+            "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/cmake/arm-none-eabi.cmake",
+            "ARM_GNU_TOOLCHAIN_BIN": "C:/Renesas/RA/e2studio_v2024-04_fsp_v5.3.0/toolchains/gcc_arm/13.2.rel1/bin",
+            "CMAKE_BUILD_TYPE": "Debug",
+            "PLATFORM": "RA6T2"
+            }
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "RA6T2-Debug",
+            "configurePreset": "RA6T2-Debug"
+        }
+    ]
+}

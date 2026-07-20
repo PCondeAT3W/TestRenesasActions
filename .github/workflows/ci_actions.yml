@@ -19,7 +19,7 @@ jobs:
       shell: bash
       run: |
         sudo apt-get update
-        sudo apt-get install -y cmake build-essential ruby ruby-dev gdb clang-tidy curl
+        sudo apt-get install -y cmake build-essential ruby ruby-dev gdb clang-tidy curl ninja-build
 
     - name: Install Ceedling
       run: sudo gem install ceedling --no-document
@@ -31,7 +31,7 @@ jobs:
     
     - name: Install FSP studio 6.1.0
       run: |
-       sudo ./setup_fsp_v6_1_0_e2s_v2025-07.xz.run --accept --nox11  -- --launcher.suppressErrors -nosplash -install.silent -install.Declipse.p2.default.renesas.installPath=/opt/renesas
+       sudo ./setup_fsp_v6_1_0_e2s_v2025-07.xz.run --accept --nox11  -- --launcher.suppressErrors -nosplash -install.silent -install.Declipse.p2.default.renesas.installPath=/root/renesas
 
     - name: Verify Renesas toolchain
       shell: bash
@@ -52,3 +52,12 @@ jobs:
         clang-tidy --version
         ruby --version
         ceedling version
+
+    - name: Create build directory
+      run: mkdir -p build
+
+    - name: Configure CMake for HOST
+      run: |
+        cmake -S . -B build -G Ninja \
+              -DARM_GNU_TOOLCHAIN_BIN="/root/renesas/ra/e2studio_v2025-07_fsp_v6.1.0/toolchains/gcc_arm/13.2.rel1/bin" \
+              -DCMAKE_BUILD_TYPE=Debug -DPLATFORM=RA6T2

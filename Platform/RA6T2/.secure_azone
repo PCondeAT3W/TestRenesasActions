@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<azone>
+    <rzone name="R7FA6T2AB3CFL.rzone"/>
+    <partition>
+        <peripheral name="PORTA.CM33" group="PORT">
+            <slot name="PA13.CM33" secure="true"/>
+            <slot name="PA14.CM33" secure="true"/>
+            <slot name="PA15.CM33" secure="true"/>
+        </peripheral>
+        <peripheral name="PORTB.CM33" group="PORT">
+            <slot name="PB03.CM33" secure="true"/>
+        </peripheral>
+    </partition>
+</azone>
