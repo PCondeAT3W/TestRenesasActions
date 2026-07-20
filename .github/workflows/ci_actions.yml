@@ -36,14 +36,16 @@ jobs:
     - name: Download RASC 6.1.0 installer
       shell: bash
       run: |
+        set -euxo pipefail
+
         curl \
           --fail \
           --location \
           --show-error \
           --silent \
           --retry 3 \
-          --output "${FSP_INSTALLER}" \
-         "https://github.com/renesas/fsp/releases/download/v6.1.0/setup_fsp_v6_1_0_rasc_v2025-07.xz.run"
+          --output "${RASC_INSTALLER}" \
+         "https://github.com/renesas/fsp/releases/download/v${FSP_VERSION}/${RASC_INSTALLER}"
 
         chmod +x "${RASC_INSTALLER}"
         ls -lh "${RASC_INSTALLER}"
