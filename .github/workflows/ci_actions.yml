@@ -11,11 +11,19 @@ jobs:
   build-and-test:
     runs-on: ubuntu-latest
 
+    env: 
+      FSP_VERSION: "6.1.0" 
+      E2STUDIO_VERSION: "2025-07" 
+      RENESAS_INSTALL_DIR: "/root/renesas" 
+      FSP_INSTALLER: "setup_fsp_v6_1_0_e2s_v2025-07.xz.run"
+      ARM_GNU_TOOLCHAIN_BIN: "/root/renesas/ra/e2studio_v2025-07_fsp_v6.1.0/toolchains/gcc_arm/arm-gnu-toolchain-13.2.Rel1-x86_64-arm-none-eabi/bin"
+
+
     steps:
     - name: Checkout source
       uses: actions/checkout@v7
 
-    - name: Install dependencies (CMake, Ruby, Ceedling, Clang-Tidy)
+    - name: Install dependencies
       shell: bash
       run: |
         sudo apt-get update
@@ -26,22 +34,28 @@ jobs:
 
     - name: Download FSP studio 6.1.0
       run: |
-       curl -L -O "https://github.com/renesas/fsp/releases/download/v6.1.0/setup_fsp_v6_1_0_e2s_v2025-07.xz.run"
-       sudo chmod +x setup_fsp_v6_1_0_e2s_v2025-07.xz.run
+
+        curl --fail --location --show-error --silent --retry 3 --output "${FSP_INSTALLER}" \ 
+        "https://github.com/renesas/fsp/releases/download/v${FSP_VERSION}/${FSP_INSTALLER}"
+        chmod +x "${FSP_INSTALLER}" 
+        ls -lh "${FSP_INSTALLER}"
     
     - name: Install FSP studio 6.1.0
       run: |
-       sudo ./setup_fsp_v6_1_0_e2s_v2025-07.xz.run --accept --nox11  -- --launcher.suppressErrors -nosplash -install.silent -install.Declipse.p2.default.renesas.installPath=/root/renesas
-
-    - name: Verify Renesas toolchain
-      shell: bash
-      run: |
-        set -euxo pipefail
-
-        sudo /root/renesas/ra/e2studio_v2025-07_fsp_v6.1.0/toolchains/gcc_arm/arm-gnu-toolchain-13.2.Rel1-x86_64-arm-none-eabi/bin/arm-none-eabi-gcc --version
-        sudo /root/renesas/ra/e2studio_v2025-07_fsp_v6.1.0/toolchains/gcc_arm/arm-gnu-toolchain-13.2.Rel1-x86_64-arm-none-eabi/bin/arm-none-eabi-g++ --version
-        sudo /root/renesas/ra/e2studio_v2025-07_fsp_v6.1.0/toolchains/gcc_arm/arm-gnu-toolchain-13.2.Rel1-x86_64-arm-none-eabi/bin/arm-none-eabi-size --version
-
+       sudo mkdir -p "${RENESAS_INSTALL_DIR}"
+       sudo "./${FSP_INSTALLER}" --accept --nox11 -- --launcher.suppressErrors -nosplash -install.silent \ 
+       "-install.Declipse.p2.default.renesas.installPath=${RENESAS_INSTALL_DIR}"
+     
+    - name: Verify Renesas toolchain 
+      shell: bash run: | 
+        set -euxo pipefail 
+        sudo test -x "${ARM_GNU_TOOLCHAIN_BIN}/arm-none-eabi-gcc" 
+        sudo test -x "${ARM_GNU_TOOLCHAIN_BIN}/arm-none-eabi-g++" 
+        sudo test -x "${ARM_GNU_TOOLCHAIN_BIN}/arm-none-eabi-size" 
+        sudo "${ARM_GNU_TOOLCHAIN_BIN}/arm-none-eabi-gcc" --version 
+        sudo "${ARM_GNU_TOOLCHAIN_BIN}/arm-none-eabi-g++" --version 
+        sudo "${ARM_GNU_TOOLCHAIN_BIN}/arm-none-eabi-size" --version
+    
     - name: Verify development environment
       shell: bash
       run: |
@@ -56,8 +70,36 @@ jobs:
     - name: Create build directory
       run: mkdir -p build
 
-    - name: Configure CMake for HOST
+    - name: Configure
       run: |
         cmake -S . -B build -G Ninja \
-              -DARM_GNU_TOOLCHAIN_BIN="/root/renesas/ra/e2studio_v2025-07_fsp_v6.1.0/toolchains/gcc_arm/13.2.rel1/bin" \
+              -DARM_GNU_TOOLCHAIN_BIN="${ARM_GNU_TOOLCHAIN_BIN}" \
               -DCMAKE_BUILD_TYPE=Debug -DPLATFORM=RA6T2
+
+    - name: Link and verify compile commands
+      run: |
+        ln -sf build/compile_commands.json .
+        ls -l compile_commands.json
+        head -n 20 compile_commands.json
+
+    - name: Static analysis with clang-tidy
+      run: |
+        echo "::group::Running clang-tidy"
+        clang-tidy -p build $(find Core -name '*.c') -- || exit 1
+        echo "::endgroup::"
+
+    - name: Build
+      run: cmake --build build/RA6T2-Debug
+
+    - name: Compiler warnings
+      run: |
+        echo "::group::Warnings"
+        cmake --build build --parallel 2>&1 | tee build.log | grep warning || true
+        echo "::endgroup::"
+
+    - name: Unit tests with Ceedling
+      working-directory: .
+      run: |
+        set -eo pipefail
+        ceedling test:all | tee ceedling_output.log
+        grep -q "FAIL" ceedling_output.log && exit 1 || exit 0
