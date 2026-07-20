@@ -51,8 +51,8 @@ jobs:
    
     - name: Install FSP studio 6.1.0
       run: |
-       sudo "./${FSP_INSTALLER}" --accept --nox11 -- --launcher.suppressErrors -nosplash -install.silent \ 
-       "-install.Declipse.p2.default.renesas.installPath=/opt/renesas"
+        sudo "./${FSP_INSTALLER}" --accept --nox11 -- --launcher.suppressErrors -nosplash -install.silent \ 
+       -install.Declipse.p2.default.renesas.installPath="${RENESAS_INSTALL_DIR}"
      
     - name: Verify Renesas toolchain 
       shell: bash 
