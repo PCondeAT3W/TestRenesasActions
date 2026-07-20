@@ -114,7 +114,17 @@ jobs:
         echo "::endgroup::"
 
     - name: Build
-      run: sudo cmake --build build
+      run: |
+        set +e
+        cmake --build build --verbose
+        status=$?
+
+        echo "RASC logs:"
+        find build -name rasc_cmd_log.txt -print -exec cat {} \;
+
+        exit "${status}"
+
+
 
     - name: Compiler warnings
       run: |
