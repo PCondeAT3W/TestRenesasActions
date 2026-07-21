@@ -3,6 +3,8 @@ name: Test renesas install enviroment
 on:
   push:
     branches: [ main ]
+    tags:
+      - "v*"
   pull_request:
     branches: [ main ]
   workflow_dispatch:
@@ -169,11 +171,13 @@ jobs:
         echo "bin=build/ra6t2_build/FW/Corrv${VERSION_NUM}.bin" >> "$GITHUB_OUTPUT"
 
     - name: Validate release files
+      if: github.event_name == 'push' && github.ref_type == 'tag'
       run: |
         test -s "${{ steps.firmware.outputs.hex }}"
         test -s "${{ steps.firmware.outputs.bin }}"
 
     - name: Publish release
+      if: github.event_name == 'push' && github.ref_type == 'tag'
       env:
         GH_TOKEN: ${{ github.token }}
       run: |

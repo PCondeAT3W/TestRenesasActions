@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.22)
-project(CORROSION_ANALYZER LANGUAGES C VERSION 2.0.0.10)
+project(CORROSION_ANALYZER LANGUAGES C VERSION 2.0.0.1)
 
 find_package(Python3 REQUIRED COMPONENTS Interpreter)
 find_package(Git REQUIRED QUIET)
