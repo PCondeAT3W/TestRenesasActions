@@ -47,3 +47,10 @@ include(${CMAKE_CURRENT_LIST_DIR}/cmake/GeneratedCfg.cmake)
 # If required user can amend RASC generated flags here, e.g. list(REMOVE_ITEM RASC_CMAKE_C_FLAGS "-Wall")
 
 include(${CMAKE_CURRENT_LIST_DIR}/cmake/GeneratedSrc.cmake)
+
+add_custom_command(
+    TARGET ${PROJECT_NAME}.elf
+    POST_BUILD
+    COMMAND ${CMAKE_OBJCOPY} -O ihex $<TARGET_FILE:${PROJECT_NAME}.elf> ${PROJECT_BINARY_DIR}/${PROJECT_NAME}.hex
+    COMMENT "Creating Intel HEX file in ${PROJECT_BINARY_DIR}"
+)

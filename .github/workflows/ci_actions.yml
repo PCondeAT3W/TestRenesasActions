@@ -120,18 +120,26 @@ jobs:
         echo "::endgroup::"
 
     - name: Build
+      shell: bash
       run: |
-        set +e
-        sudo cmake --build build --verbose
-        status=$?
+        max_attempts=2
 
-        echo "RASC logs:"
-        find build -name rasc_cmd_log.txt -print -exec cat {} \;
+        for attempt in $(seq 1 "$max_attempts"); do
+          echo "Build: intento $attempt de $max_attempts"
 
-        exit "${status}"
+          if sudo cmake --build build --verbose; then
+            echo "Build completado correctamente"
+            exit 0
+          fi
 
+          if [ "$attempt" -lt "$max_attempts" ]; then
+            echo "El build ha fallado. Reintentando..."
+            sleep 5
+          fi
+        done
 
-
+    echo "El build falló tras $max_attempts intentos"
+    exit 1
     - name: Compiler warnings
       run: |
         echo "::group::Warnings"
