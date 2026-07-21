@@ -44,7 +44,7 @@ fi
 
 VERSION_NUM="${VERSION//./}"
 
-fw_path="build/RA6T2-${BUILD}/ra6t2_build"
+fw_path="build/ra6t2_build"
 in_file="${fw_path}/RA6T2.hex"
 in_elf="${fw_path}/RA6T2.elf"
 out_path="${fw_path}/FW"
