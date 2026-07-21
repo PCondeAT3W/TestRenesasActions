@@ -72,7 +72,6 @@ foreach(d IN LISTS _RA_INCS)
 endforeach()
 
 target_include_directories(platform_ra6t2 PRIVATE 
-  ${APP_ROOT}/Middleware/SEGGER_RTT/inc
   "${CMAKE_SOURCE_DIR}/ra/aws/FreeRTOS/FreeRTOS/Source/include"
   "${CMAKE_SOURCE_DIR}/ra_cfg/aws"
   "${CMAKE_SOURCE_DIR}/ra/fsp/src/rm_freertos_port"
@@ -82,7 +81,6 @@ target_include_directories(platform_ra6t2 PRIVATE
 target_link_libraries(platform_ra6t2 PRIVATE 
   ra6t2_fsp_flags 
   corrosion_core 
-  segger
   )
 
 function(_at3w_link_into_ra6t2_elf)

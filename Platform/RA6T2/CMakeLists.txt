@@ -48,6 +48,9 @@ include(${CMAKE_CURRENT_LIST_DIR}/cmake/GeneratedCfg.cmake)
 
 include(${CMAKE_CURRENT_LIST_DIR}/cmake/GeneratedSrc.cmake)
 
+# IMPORTANT: Add core library => Application logic
+include(${CMAKE_CURRENT_LIST_DIR}/../../cmake/ra6t2_project_include.cmake OPTIONAL)
+
 add_custom_command(
     TARGET ${PROJECT_NAME}.elf
     POST_BUILD

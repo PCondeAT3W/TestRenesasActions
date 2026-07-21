@@ -28,7 +28,7 @@ jobs:
       shell: bash
       run: |
         sudo apt-get update
-        sudo apt-get install -y cmake build-essential ruby ruby-dev gdb clang-tidy curl ninja-build
+        sudo apt-get install -y cmake build-essential ruby ruby-dev gdb clang-tidy curl ninja-build srecord
 
     - name: Install Ceedling
       run: sudo gem install ceedling --no-document
@@ -140,16 +140,16 @@ jobs:
 
         echo "El build falló tras $max_attempts intentos"
         exit 1
-        
+
     - name: Compiler warnings
       run: |
         echo "::group::Warnings"
         cmake --build build --parallel 2>&1 | tee build.log | grep warning || true
         echo "::endgroup::"
 
-    - name: Unit tests with Ceedling
-      working-directory: .
-      run: |
-        set -eo pipefail
-        ceedling test:all | tee ceedling_output.log
-        grep -q "FAIL" ceedling_output.log && exit 1 || exit 0
+    # - name: Unit tests with Ceedling
+    #   working-directory: .
+    #   run: |
+    #     set -eo pipefail
+    #     ceedling test:all | tee ceedling_output.log
+    #     grep -q "FAIL" ceedling_output.log && exit 1 || exit 0

@@ -1,7 +1,21 @@
 #include "core.h"
 
-int core_run ( void ) {
-    // Implementation of the core_run function
-    // This function would contain the main logic for running the core application
-    return 0; // Return 0 to indicate successful execution
+#include <inttypes.h>
+#include <stdint.h>
+#include <stdio.h>
+
+__attribute__((section(".META_DATA"), used, aligned(4)))
+const uint32_t metadata = UINT32_C(0xDEADBEEF);
+
+const uint32_t * metadata_reference(void)
+{
+    return &metadata;
+}
+
+int core_run(void)
+{
+    const uint32_t * meta_ref = metadata_reference();
+
+
+    return 0;
 }

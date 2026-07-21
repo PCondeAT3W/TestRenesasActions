@@ -56,6 +56,30 @@ if(PLATFORM STREQUAL "RA6T2")
         set(CRC_BUILD_ARG "R")
     endif()
 
+    if(CMAKE_HOST_WIN32)
+        set(CRC_POSTBUILD_COMMAND
+            cmd /C "${CMAKE_SOURCE_DIR}/crc.bat"
+        )
+    else()
+        set(CRC_POSTBUILD_COMMAND
+            bash "${CMAKE_SOURCE_DIR}/crc.sh"
+        )
+    endif()
+
+    add_custom_target(crc_postbuild ALL
+        COMMAND ${CRC_POSTBUILD_COMMAND}
+                --version "${PROJECT_VERSION}"
+                --build "${CRC_BUILD_ARG}"
+                --objcopy "${CMAKE_OBJCOPY}"
+        DEPENDS ra6t2_firmware
+        WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
+        COMMENT "Executing CRC postbuild..."
+        VERBATIM
+    )
+
+    add_custom_target(firmware ALL DEPENDS crc_postbuild)
+
+
 else()
     message(FATAL_ERROR "Unknown PLATFORM: ${PLATFORM}")
 endif()
