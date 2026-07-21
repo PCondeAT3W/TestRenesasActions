@@ -111,7 +111,9 @@ jobs:
         cmake -S . -B build -G Ninja \
               -DARM_GNU_TOOLCHAIN_BIN="${ARM_GNU_TOOLCHAIN_BIN}" \
               -DRASC_EXE_PATH="${RASC_EXE_PATH}" \
-              -DCMAKE_BUILD_TYPE=Debug -DPLATFORM=RA6T2
+              -DCMAKE_BUILD_TYPE=Debug -DPLATFORM=RA6T2 \
+              -DCMAKE_TOOLCHAIN_FILE=cmake/arm-none-eabi.cmake
+
 
     - name: Static analysis with clang-tidy
       run: |
@@ -153,3 +155,31 @@ jobs:
     #     set -eo pipefail
     #     ceedling test:all | tee ceedling_output.log
     #     grep -q "FAIL" ceedling_output.log && exit 1 || exit 0
+
+
+    - name: Determine release files
+      id: firmware
+      shell: bash
+      run: |
+        VERSION="${GITHUB_REF_NAME#v}"
+        VERSION_NUM="${VERSION//./}"
+
+        echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+        echo "hex=build/ra6t2_build/FW/Corrv${VERSION_NUM}.hex" >> "$GITHUB_OUTPUT"
+        echo "bin=build/ra6t2_build/FW/Corrv${VERSION_NUM}.bin" >> "$GITHUB_OUTPUT"
+
+    - name: Validate release files
+      run: |
+        test -s "${{ steps.firmware.outputs.hex }}"
+        test -s "${{ steps.firmware.outputs.bin }}"
+
+    - name: Publish release
+      env:
+        GH_TOKEN: ${{ github.token }}
+      run: |
+        gh release create "${GITHUB_REF_NAME}" \
+          "${{ steps.firmware.outputs.hex }}" \
+          "${{ steps.firmware.outputs.bin }}" \
+          --verify-tag \
+          --generate-notes \
+          --title "Firmware ${GITHUB_REF_NAME}"
