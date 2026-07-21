@@ -138,8 +138,9 @@ jobs:
           fi
         done
 
-    echo "El build falló tras $max_attempts intentos"
-    exit 1
+        echo "El build falló tras $max_attempts intentos"
+        exit 1
+        
     - name: Compiler warnings
       run: |
         echo "::group::Warnings"
