@@ -125,7 +125,7 @@ jobs:
     - name: Configure
       run: |
         cmake -S . -B build -G Ninja \
-              -DARM_GNU_TOOLCHAIN_BIN="" \
+              -DARM_GNU_TOOLCHAIN_BIN="${ARM_TOOLCHAIN_DIR}/bin" \
               -DRASC_EXE_PATH="${RASC_EXE_PATH}" \
               -DCMAKE_BUILD_TYPE=Debug -DPLATFORM=RA6T2 \
               -DCMAKE_TOOLCHAIN_FILE=cmake/arm-none-eabi.cmake
