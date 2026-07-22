@@ -8,14 +8,15 @@ on:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
+    permissions:
+      contents: writes
+      actions: write
 
     env: 
       FSP_VERSION: "6.1.0" 
       E2STUDIO_VERSION: "2025-07" 
       RENESAS_INSTALL_DIR: "/home/runner/renesas" 
-      FSP_INSTALLER: "setup_fsp_v6_1_0_e2s_v2025-07.xz.run"
       RASC_INSTALLER: "setup_fsp_v6_1_0_rasc_v2025-07.xz.run"
-      ARM_GNU_TOOLCHAIN_BIN: "/home/runner/renesas/ra/e2studio_v2025-07_fsp_v6.1.0/toolchains/gcc_arm/arm-gnu-toolchain-13.2.Rel1-x86_64-arm-none-eabi/bin"
       RASC_EXE_PATH: "/home/runner/renesas/ra/sc_v2025-07_fsp_v6.1.0/eclipse/rasc"
 
     steps:
@@ -48,32 +49,53 @@ jobs:
         chmod +x "${RASC_INSTALLER}"
         ls -lh "${RASC_INSTALLER}"
 
-    - name: Download FSP 6.1.0 installer
-      shell: bash
-      run: |
-        set -euxo pipefail
-
-        curl \
-          --fail \
-          --location \
-          --show-error \
-          --silent \
-          --retry 3 \
-          --output "${FSP_INSTALLER}" \
-          "https://github.com/renesas/fsp/releases/download/v${FSP_VERSION}/${FSP_INSTALLER}"
-
-        chmod +x "${FSP_INSTALLER}"
-        ls -lh "${FSP_INSTALLER}"
-   
     - name: Install RASC 6.1.0
       run: |
         "./${RASC_INSTALLER}" --accept --nox11 -- --launcher.suppressErrors -nosplash -install.silent
     
-    - name: Install FSP studio 6.1.0
+
+    - name: Download Arm GNU Toolchain 13.2.Rel1
+      shell: bash
       run: |
-       "./${FSP_INSTALLER}" --accept --nox11 -- --launcher.suppressErrors -nosplash -install.silent
+        set -euo pipefail
+
+        ARCHIVE="arm-gnu-toolchain-13.2.Rel1-x86_64-arm-none-eabi.tar.xz"
+        URL="https://developer.arm.com/-/media/Files/downloads/gnu/13.2.Rel1/binrel/${ARCHIVE}"
+
+        mkdir -p "${ARM_TOOLCHAIN_DIR}"
+
+        curl --fail --location --retry 3 \
+          --output "/tmp/${ARCHIVE}" \
+          "${URL}"
+
+        tar -xJf "/tmp/${ARCHIVE}" \
+          --directory "${ARM_TOOLCHAIN_DIR}" \
+          --strip-components=1
+
+        echo "${ARM_TOOLCHAIN_DIR}/bin" >> "${GITHUB_PATH}"
+
+    # - name: Download FSP 6.1.0 installer
+    #   shell: bash
+    #   run: |
+    #     set -euxo pipefail
+
+    #     curl \
+    #       --fail \
+    #       --location \
+    #       --show-error \
+    #       --silent \
+    #       --retry 3 \
+    #       --output "${FSP_INSTALLER}" \
+    #       "https://github.com/renesas/fsp/releases/download/v${FSP_VERSION}/${FSP_INSTALLER}"
+
+    #     chmod +x "${FSP_INSTALLER}"
+    #     ls -lh "${FSP_INSTALLER}"
+
+    # - name: Install FSP studio 6.1.0
+    #   run: |
+    #    "./${FSP_INSTALLER}" --accept --nox11 -- --launcher.suppressErrors -nosplash -install.silent
      
-    - name: Verify Renesas toolchain 
+    - name: Verify ARM toolchain 
       shell: bash 
       run: | 
        set -euxo pipefail
@@ -81,14 +103,9 @@ jobs:
        whoami
        echo "HOME=${HOME}"
 
-       test -x "${ARM_GNU_TOOLCHAIN_BIN}/arm-none-eabi-gcc"
-       test -x "${ARM_GNU_TOOLCHAIN_BIN}/arm-none-eabi-g++"
-       test -x "${ARM_GNU_TOOLCHAIN_BIN}/arm-none-eabi-size"
-       test -x "${RASC_EXE_PATH}"
-
-       "${ARM_GNU_TOOLCHAIN_BIN}/arm-none-eabi-gcc" --version
-       "${ARM_GNU_TOOLCHAIN_BIN}/arm-none-eabi-g++" --version
-       "${ARM_GNU_TOOLCHAIN_BIN}/arm-none-eabi-size" --version
+       "arm-none-eabi-gcc" --version
+       "arm-none-eabi-g++" --version
+       "arm-none-eabi-size" --version
 
     - name: Verify development environment
       shell: bash
@@ -107,7 +124,7 @@ jobs:
     - name: Configure
       run: |
         cmake -S . -B build -G Ninja \
-              -DARM_GNU_TOOLCHAIN_BIN="${ARM_GNU_TOOLCHAIN_BIN}" \
+              -DARM_GNU_TOOLCHAIN_BIN="" \
               -DRASC_EXE_PATH="${RASC_EXE_PATH}" \
               -DCMAKE_BUILD_TYPE=Debug -DPLATFORM=RA6T2 \
               -DCMAKE_TOOLCHAIN_FILE=cmake/arm-none-eabi.cmake
@@ -127,7 +144,7 @@ jobs:
         for attempt in $(seq 1 "$max_attempts"); do
           echo "Build: intento $attempt de $max_attempts"
 
-          if sudo cmake --build build --verbose; then
+          if cmake --build build; then
             echo "Build completado correctamente"
             exit 0
           fi
