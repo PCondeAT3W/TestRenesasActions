@@ -1,21 +1,17 @@
 #ifdef TEST
+#include "unity.h"
 
-#include <stdint.h>
-
-void setUp ( void ){
-    //TODO    
+void setUp(void)
+{
 }
 
-void tearDown ( void ){
-    //TODO
+void tearDown(void)
+{
 }
 
-
-void dummy_test_to_check_github_actions ( void ){
-    uint8_t a = 10;
-
-    TEST_ASSERT_EQUAL ( 10, a );
+void test_dummy_should_pass(void)
+{
+    TEST_ASSERT_TRUE(1);
 }
-
 
 #endif /* TEST */

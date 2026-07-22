@@ -118,6 +118,13 @@ jobs:
         clang-tidy -p build $(find Core -name '*.c') -- || exit 1
         echo "::endgroup::"
 
+    - name: Unit tests with Ceedling
+      working-directory: .
+      run: |
+        set -eo pipefail
+        ceedling test:all | tee ceedling_output.log
+        grep -q "FAIL" ceedling_output.log && exit 1 || exit 0
+
     - name: Build
       shell: bash
       run: |
@@ -145,13 +152,6 @@ jobs:
         echo "::group::Warnings"
         cmake --build build --parallel 2>&1 | tee build.log | grep warning || true
         echo "::endgroup::"
-
-    - name: Unit tests with Ceedling
-      working-directory: .
-      run: |
-        set -eo pipefail
-        ceedling test:all | tee ceedling_output.log
-        grep -q "FAIL" ceedling_output.log && exit 1 || exit 0
 
     - name: Determine release files
       id: firmware
