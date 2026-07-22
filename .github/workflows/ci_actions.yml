@@ -18,6 +18,7 @@ jobs:
       RENESAS_INSTALL_DIR: "/home/runner/renesas" 
       RASC_INSTALLER: "setup_fsp_v6_1_0_rasc_v2025-07.xz.run"
       RASC_EXE_PATH: "/home/runner/renesas/ra/sc_v2025-07_fsp_v6.1.0/eclipse/rasc"
+      ARM_TOOLCHAIN_DIR: "/home/arm-toolchain/"
 
     steps:
     - name: Checkout source
