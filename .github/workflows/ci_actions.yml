@@ -6,7 +6,7 @@ on:
       - "v*"
 
 jobs:
-  build-and-test:
+  build-and-generate-release:
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -18,7 +18,7 @@ jobs:
       RENESAS_INSTALL_DIR: "/home/runner/renesas" 
       RASC_INSTALLER: "setup_fsp_v6_1_0_rasc_v2025-07.xz.run"
       RASC_EXE_PATH: "/home/runner/renesas/ra/sc_v2025-07_fsp_v6.1.0/eclipse/rasc"
-      ARM_TOOLCHAIN_DIR: "/home/arm-toolchain/"
+      ARM_TOOLCHAIN_DIR: "/home/runner/arm-toolchain/"
 
     steps:
     - name: Checkout source
@@ -32,6 +32,17 @@ jobs:
 
     - name: Install Ceedling
       run: sudo gem install ceedling --no-document
+
+    - name: Verify development environment
+      shell: bash
+      run: |
+        set -euxo pipefail
+
+        cmake --version
+        ninja --version
+        clang-tidy --version
+        ruby --version
+        ceedling version
 
     - name: Download RASC 6.1.0 installer
       shell: bash
@@ -107,17 +118,6 @@ jobs:
        "arm-none-eabi-gcc" --version
        "arm-none-eabi-g++" --version
        "arm-none-eabi-size" --version
-
-    - name: Verify development environment
-      shell: bash
-      run: |
-        set -euxo pipefail
-
-        cmake --version
-        ninja --version
-        clang-tidy --version
-        ruby --version
-        ceedling version
 
     - name: Create build directory
       run: mkdir -p build
