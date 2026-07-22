@@ -2,6 +2,8 @@ name: Test renesas install enviroment
 
 on:
   push:
+    branches:
+      [ main ]
     tags:
       - "v*"
 
@@ -66,7 +68,7 @@ jobs:
         "./${RASC_INSTALLER}" --accept --nox11 -- --launcher.suppressErrors -nosplash -install.silent
     
 
-    - name: Download Arm GNU Toolchain 13.2.Rel1
+    - name: Download and Install Arm GNU Toolchain 13.2.Rel1
       shell: bash
       run: |
         set -euo pipefail
@@ -86,27 +88,6 @@ jobs:
 
         echo "${ARM_TOOLCHAIN_DIR}/bin" >> "${GITHUB_PATH}"
 
-    # - name: Download FSP 6.1.0 installer
-    #   shell: bash
-    #   run: |
-    #     set -euxo pipefail
-
-    #     curl \
-    #       --fail \
-    #       --location \
-    #       --show-error \
-    #       --silent \
-    #       --retry 3 \
-    #       --output "${FSP_INSTALLER}" \
-    #       "https://github.com/renesas/fsp/releases/download/v${FSP_VERSION}/${FSP_INSTALLER}"
-
-    #     chmod +x "${FSP_INSTALLER}"
-    #     ls -lh "${FSP_INSTALLER}"
-
-    # - name: Install FSP studio 6.1.0
-    #   run: |
-    #    "./${FSP_INSTALLER}" --accept --nox11 -- --launcher.suppressErrors -nosplash -install.silent
-     
     - name: Verify ARM toolchain 
       shell: bash 
       run: | 
@@ -165,13 +146,12 @@ jobs:
         cmake --build build --parallel 2>&1 | tee build.log | grep warning || true
         echo "::endgroup::"
 
-    # - name: Unit tests with Ceedling
-    #   working-directory: .
-    #   run: |
-    #     set -eo pipefail
-    #     ceedling test:all | tee ceedling_output.log
-    #     grep -q "FAIL" ceedling_output.log && exit 1 || exit 0
-
+    - name: Unit tests with Ceedling
+      working-directory: .
+      run: |
+        set -eo pipefail
+        ceedling test:all | tee ceedling_output.log
+        grep -q "FAIL" ceedling_output.log && exit 1 || exit 0
 
     - name: Determine release files
       id: firmware
@@ -200,4 +180,5 @@ jobs:
           "${{ steps.firmware.outputs.bin }}" \
           --verify-tag \
           --generate-notes \
-          --title "Firmware ${GITHUB_REF_NAME}"
+          --prerelease \
+          --title "${GITHUB_REF_NAME}"
